@@ -33,10 +33,10 @@ cd "$IMAGEBUILDER_DIR"
 echo "إنشاء هيكل المجلدات...
 CUSTOM_FILES_DIR="$IMAGEBUILDER_DIR/files"
 
-mkdir -p CUSTOM_FILES_DIR/etc/config
-mkdir -p CUSTOM_FILES_DIR/etc
-mkdir -p CUSTOM_FILES_DIR/usr/lib/lua/luci/{controller,view}
-mkdir -p CUSTOM_FILES_DIR/www/luci-static/argon/img
+mkdir -p $CUSTOM_FILES_DIR/etc/config
+mkdir -p $CUSTOM_FILES_DIR/etc
+mkdir -p $CUSTOM_FILES_DIR/usr/lib/lua/luci/{controller,view}
+mkdir -p $CUSTOM_FILES_DIR/www/luci-static/argon/img
 
 # =========================================================
 # 2. إنشاء وتعديل ملفات الإعدادات (Hostname & Banner)
@@ -44,7 +44,7 @@ mkdir -p CUSTOM_FILES_DIR/www/luci-static/argon/img
 echo "تطبيق تعديلات الاسم ورقم الهاتف..."
 
 # a) تعديل اسم المضيف (Hostname) في /etc/config/system
-cat > files/etc/config/system << EOF
+cat > $CUSTOM_FILES_DIR/etc/config/system << EOF
 config system
     option hostname '$CUSTOM_HOSTNAME'
     option timezone 'UTC'
@@ -62,7 +62,7 @@ echo "✅ تم إنشاء ملف files/etc/banner."
 echo "إضافة صفحة 'حولنا' إلى LuCI..."
 
 # a) LuCI Controller: يضيف الصفحة إلى القائمة الرئيسية (الترتيب 90)
-cat > CUSTOM_FILES_DIR/usr/lib/lua/luci/controller/about.lua << EOF
+cat > $CUSTOM_FILES_DIR/usr/lib/lua/luci/controller/about.lua << EOF
 module("luci.controller.about", package.seeall)
 
 function index()
@@ -76,7 +76,7 @@ EOF
 echo "✅ تم إنشاء ملف Controller (about.lua)."
 
 # b) LuCI View: محتوى صفحة "حولنا"
-cat > CUSTOM_FILES_DIR/usr/lib/lua/luci/view/about_page.htm << EOF
+cat > $CUSTOM_FILES_DIR/usr/lib/lua/luci/view/about_page.htm << EOF
 <%+header%>
 <h2><%:حول نظام $CUSTOM_HOSTNAME%></h2>
 <div class="cbi-map-descr">
