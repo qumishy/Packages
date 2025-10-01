@@ -1,44 +1,42 @@
-name: OpenWrt CR6608 Custom Image Build
+name: OpenWrt ImageBuilder for CR6608
 
-# حدد متى يتم تشغيل هذا السير العمل
 on:
   push:
     branches:
-      - main  # يمكنك تغيير هذا إلى اسم الفرع الرئيسي لديك
-  workflow_dispatch: # يسمح لك بتشغيل البناء يدوياً من واجهة GitHub
+      - main
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest # استخدم خادم Ubuntu قوي وسريع
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository Files
+    - name: Checkout Repository
       uses: actions/checkout@v4
-      # هذه الخطوة تجلب كل ملفاتك (بما في ذلك files.sh و m.jpg) إلى الخادم
 
-    - name: Download OpenWrt ImageBuilder (23.05.3 - ramips/mt7621)
+    - name: Download ImageBuilder
       run: |
-        # يرجى التحقق من أحدث إصدار ثابت (Stable) واستخدامه
+        # يمكنك استبدال الرابط بالإصدار الذي تريده (مثلاً 23.05.6)
+        # هذا الرابط يجب أن يكون دقيقًا لـ ramips/mt7621
         wget https://downloads.openwrt.org/releases/23.05.3/targets/ramips/mt7621/openwrt-imagebuilder-23.05.3-ramips-mt7621.Linux-x86_64.tar.xz
         tar -xf openwrt-imagebuilder-*.tar.xz
         
-    - name: Run Custom Setup Script
+    - name: Run Build Script and Apply Customizations
       run: |
-        # تحديد اسم مجلد ImageBuilder الناتج
-        BUILDER_DIR=$(find . -maxdepth 1 -type d -name "openwrt-imagebuilder-*" | head -n 1)
-        
-        
-        
-    - name: Perform Final Image Build
-      run: |
-        # نحدد مجلد ImageBuilder مرة أخرى وندخل إليه
+        # ندخل إلى مجلد ImageBuilder (قد تحتاج لتعديل الاسم)
+        # ونستخدم نفس أمر البناء الذي اتفقنا عليه
         BUILDER_DIR=$(find . -maxdepth 1 -type d -name "openwrt-imagebuilder-*" | head -n 1)
         cd $BUILDER_DIR
 
-        # تنفيذ أمر البناء النهائي مع مسار التخصيص
-        # نستخدم "files/" لأن السكربت قام بإنشاء هذا المجلد بالفعل داخل ImageBuilder
-        #make image PROFILE="xiaomi_mi-router-cr6608" \
+        # تنفيذ أمر البناء
+        make image PROFILE="xiaomi_mi-router-cr6608" \
         PACKAGES="luci luci-theme-argon -ppp -ppp-mod-pppoe" \
-        FILES="files/"
-        
-    
+        FILES="../../files/"
+        # نستخدم ../../files/ لأن مجلد files/ الخاص بنا سيكون في المجلد الأب مرتين
+
+    - name: Upload Firmware Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: openwrt-custom-firmware
+        path: ${{ env.BUILDER_DIR }}/bin/targets/ramips/mt7621/*.bin
+
