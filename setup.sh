@@ -30,11 +30,13 @@ cd "$IMAGEBUILDER_DIR"
 # =========================================================
 # 1. إنشاء هيكل المجلدات files/
 # =========================================================
-echo "إنشاء هيكل المجلدات..."
-mkdir -p files/etc/config
-mkdir -p files/etc
-mkdir -p files/usr/lib/lua/luci/{controller,view}
-mkdir -p files/www/luci-static/argon/img
+echo "إنشاء هيكل المجلدات...
+CUSTOM_FILES_DIR="$IMAGEBUILDER_DIR/files"
+
+mkdir -p CUSTOM_FILES_DIR/etc/config
+mkdir -p CUSTOM_FILES_DIR/etc
+mkdir -p CUSTOM_FILES_DIR/usr/lib/lua/luci/{controller,view}
+mkdir -p CUSTOM_FILES_DIR/www/luci-static/argon/img
 
 # =========================================================
 # 2. إنشاء وتعديل ملفات الإعدادات (Hostname & Banner)
@@ -60,7 +62,7 @@ echo "✅ تم إنشاء ملف files/etc/banner."
 echo "إضافة صفحة 'حولنا' إلى LuCI..."
 
 # a) LuCI Controller: يضيف الصفحة إلى القائمة الرئيسية (الترتيب 90)
-cat > files/usr/lib/lua/luci/controller/about.lua << EOF
+cat > CUSTOM_FILES_DIR/usr/lib/lua/luci/controller/about.lua << EOF
 module("luci.controller.about", package.seeall)
 
 function index()
@@ -74,7 +76,7 @@ EOF
 echo "✅ تم إنشاء ملف Controller (about.lua)."
 
 # b) LuCI View: محتوى صفحة "حولنا"
-cat > files/usr/lib/lua/luci/view/about_page.htm << EOF
+cat > CUSTOM_FILES_DIR/usr/lib/lua/luci/view/about_page.htm << EOF
 <%+header%>
 <h2><%:حول نظام $CUSTOM_HOSTNAME%></h2>
 <div class="cbi-map-descr">
@@ -89,7 +91,7 @@ echo "✅ تم إنشاء ملف View (about_page.htm)."
 # 4. نسخ ملف اللوجو
 # =========================================================
 if [ -f "../$LOGO_SOURCE" ]; then
-    cp "../$LOGO_SOURCE" "files/www/luci-static/argon/img/$LOGO_DEST_NAME"
+    cp "../$LOGO_SOURCE" "CUSTOM_FILES_DIR/www/luci-static/argon/img/$LOGO_DEST_NAME"
     echo "✅ تم نسخ اللوجو ($LOGO_SOURCE) وتسميته ($LOGO_DEST_NAME)."
 else
     echo "❌ لم يتم نسخ اللوجو. سيتم استخدام اللوجو الافتراضي لثيم Argon."
@@ -102,7 +104,7 @@ echo "========================================================="
 echo "✅ اكتمل إعداد الملفات بنجاح!"
 echo "الآن، يمكنك تشغيل أمر البناء السريع ImageBuilder:"
 echo ""
-echo "make image PROFILE=\"[اسم الجهاز]\" PACKAGES=\"luci luci-theme-argon -ppp -ppp-mod-pppoe\" FILES=\"files/\""
+echo "make image PROFILE=\"" PACKAGES=\"luci luci-theme-argon -ppp -ppp-mod-pppoe\" FILES=\"files/\""
 echo ""
 echo "لا تنس استبدال [اسم الجهاز] بملف تعريف جهازك الفعلي."
 echo "========================================================="
