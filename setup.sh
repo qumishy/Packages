@@ -4,7 +4,7 @@
 # متغيرات التخصيص
 # يجب عليك تحديث هذه القيم قبل تشغيل السكربت
 # =========================================================
-IMAGEBUILDER_DIR="openwrt-imagebuilder-23.05.6-ramips-mt7621.Linux-x86_64"  # عدّل هذا الاسم ليتطابق مع اسم مجلد ImageBuilder الفعلي
+IMAGEBUILDER_DIR="image-builder"  # عدّل هذا الاسم ليتطابق مع اسم مجلد ImageBuilder الفعلي
 CUSTOM_HOSTNAME="ابو عياض"
 PHONE_NUMBER="774372146"
 LOGO_SOURCE="m.jpg" # تأكد من أن هذه الصورة موجودة في نفس مجلد السكربت

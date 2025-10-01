@@ -1,0 +1,4 @@
+config system
+    option hostname 'ابو عياض'
+    option timezone 'UTC'
+    # يمكنك إضافة أي خيارات نظام افتراضية أخرى هنا
