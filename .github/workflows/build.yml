@@ -1,0 +1,56 @@
+name: OpenWrt CR6608 Custom Image Build
+
+# حدد متى يتم تشغيل هذا السير العمل
+on:
+  push:
+    branches:
+      - main  # يمكنك تغيير هذا إلى اسم الفرع الرئيسي لديك
+  workflow_dispatch: # يسمح لك بتشغيل البناء يدوياً من واجهة GitHub
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # استخدم خادم Ubuntu قوي وسريع
+
+    steps:
+    - name: Checkout Repository Files
+      uses: actions/checkout@v4
+      # هذه الخطوة تجلب كل ملفاتك (بما في ذلك files.sh و m.jpg) إلى الخادم
+
+    - name: Download OpenWrt ImageBuilder (23.05.3 - ramips/mt7621)
+      run: |
+        # يرجى التحقق من أحدث إصدار ثابت (Stable) واستخدامه
+        wget https://downloads.openwrt.org/releases/23.05.3/targets/ramips/mt7621/openwrt-imagebuilder-23.05.3-ramips-mt7621.Linux-x86_64.tar.xz
+        tar -xf openwrt-imagebuilder-*.tar.xz
+        
+    - name: Run Custom Setup Script
+      run: |
+        # تحديد اسم مجلد ImageBuilder الناتج
+        BUILDER_DIR=$(find . -maxdepth 1 -type d -name "openwrt-imagebuilder-*" | head -n 1)
+        
+        # 1. إعطاء صلاحية التنفيذ للسكربت ثم تشغيله
+        chmod +x setup.sh
+        
+        # 2. تشغيل السكربت من المجلد الرئيسي وتمرير مسار ImageBuilder إليه
+        # (يجب تعديل محتوى setup_files.sh ليستخدم $BUILDER_DIR كمسار له بدلاً من الاسم الثابت)
+        ./setup.sh
+        
+    - name: Perform Final Image Build
+      run: |
+        # نحدد مجلد ImageBuilder مرة أخرى وندخل إليه
+        BUILDER_DIR=$(find . -maxdepth 1 -type d -name "openwrt-imagebuilder-*" | head -n 1)
+        cd $BUILDER_DIR
+
+        # تنفيذ أمر البناء النهائي مع مسار التخصيص
+        # نستخدم "files/" لأن السكربت قام بإنشاء هذا المجلد بالفعل داخل ImageBuilder
+        make image PROFILE="xiaomi_mi-router-cr6608" \
+        PACKAGES="luci luci-theme-argon -ppp -ppp-mod-pppoe" \
+        FILES="files/"
+        
+    - name: Upload Firmware Artifact (OpenWrt Custom)
+      uses: actions/upload-artifact@v4
+      with:
+        name: OpenWrt_CR6608_AboAyad_Custom
+        path: |
+          openwrt-imagebuilder-*/bin/targets/ramips/mt7621/*sysupgrade.bin
+        retention-days: 7 # حفظ الملف الناتج لمدة 7 أيام
+
