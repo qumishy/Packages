@@ -31,7 +31,7 @@ jobs:
         # تنفيذ أمر البناء
         make image PROFILE="xiaomi_mi-router-cr6608" \
         PACKAGES="luci luci-theme-argon -ppp -ppp-mod-pppoe" \
-        FILES="../../files/"
+        FILES="../files/"
         # نستخدم ../../files/ لأن مجلد files/ الخاص بنا سيكون في المجلد الأب مرتين
 
     - name: Upload Firmware Artifact
